@@ -10,3 +10,5 @@
 写完之后发现JS/TS 一把梭之后好像就没啥了。。(JS一把梭真不错！我还是先好好看下angular和express框架的文档好了hhhh)
 想要持续开发这个仓库。因此开源出来希望有点子的大佬们一起来开发。
 比如数据定制化啥的...etc.
+
+前端地址 https://github.com/DevilMayCry2333/corVirMonitor-ui
