@@ -100,6 +100,7 @@ function getIssue() {
 
         corVirus += "城市名: " + ans.cityName + "<br/>";
         corVirus += "待治愈案例: " + ans.currentConfirmedCount + "<br/>";
+        corVirus += "疑似案例" + ans.suspectedCount + "<br/>";
         corVirus += "确认案例: " + ans.confirmedCount + "<br/>";
         corVirus += "治愈案例: " + ans.curedCount + "<br/>";
         corVirus += "死亡案例: " + ans.deadCount + "<br/>";
