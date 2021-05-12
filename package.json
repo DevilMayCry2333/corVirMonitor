@@ -13,7 +13,7 @@
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
     "mysql2": "^2.1.0",
-    "nodemailer": "^6.4.3",
+    "nodemailer": "^6.4.16",
     "pug": "2.0.0-beta11",
     "request": "^2.88.2",
     "sequelize": "^5.21.5"
