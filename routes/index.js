@@ -41,7 +41,6 @@ async function main(corVirus) {
     secure: true, // true for 465, false for other ports
     auth: {
       user: '1712363499@qq.com', // generated ethereal user
-      pass: '' // generated ethereal password
     }
   });
 
@@ -77,36 +76,42 @@ function getIssue() {
       var mysql      = require('mysql2');
       const date = require('silly-datetime')
       var connection = mysql.createConnection({
-        host     : '',
         user     : 'debian-sys-maint',
-        password : '',
         database : 'pythonTest'
       });
       connection.connect();
-      let yestDay = date.format(new Date(new Date().getTime() - 1000*3600*24),'YYYYMMDD')
-      var sql = "SELECT distinct(cityName) cityNameDis, city_confirmedCount, city_suspectedCount, city_curedCount, city_deadCount from DXYArea_Test where (cityName like '%福州%' or cityName like '%厦门%' )and date_format(updateTime,'%Y%m%d') = "
+      let yestDay = date.format(new Date(new Date().getTime() - 1000*3600*24*2),'YYYYMMDD')
+      var sql = "SELECT distinct(cityName) cityNameDis, city_confirmedCount, city_suspectedCount, city_curedCount, city_deadCount from DXYArea_Test where (cityName like '%福州%' or cityName like '%厦门%' or cityName like '%昌平区%') and date_format(updateTime,'%Y%m%d') = "
           + yestDay
           + " group by cityNameDis"
       connection.query(sql,async function (error, results, fields) {
               if (error) throw error;
+                console.log(results)
               // console.log('city_confirmedCount: ', results[0].city_confirmedCount);
               // console.log('city_suspectedCount: ', results[0].city_suspectedCount);
               // console.log('city_curedCount: ', results[0].city_curedCount);
               // console.log('city_deadCount: ', results[0].city_deadCount);
-              corVirus += "城市名: " + results[0].cityNameDis + "<br/>";
-              corVirus += "疑似案例" + results[0].city_suspectedCount + "<br/>";
-              corVirus += "确认案例: " + results[0].city_confirmedCount + "<br/>";
-              corVirus += "治愈案例: " + results[0].city_curedCount + "<br/>";
-              corVirus += "死亡案例: " + results[0].city_deadCount + "<br/>";
-              corVirus += "========<br/>";
-              corVirus += "城市名: " + results[1].cityNameDis + "<br/>";
-              corVirus += "疑似案例" + results[1].city_suspectedCount + "<br/>";
-              corVirus += "确认案例: " + results[1].city_confirmedCount + "<br/>";
-              corVirus += "治愈案例: " + results[1].city_curedCount + "<br/>";
-              corVirus += "死亡案例: " + results[1].city_deadCount + "<br/>";
-
-              json.push(results[0]);
-              json.push(results[1]);
+              if (results.length > 0){
+                  corVirus += "城市名: " + results[0].cityNameDis + "<br/>";
+                  corVirus += "疑似案例" + results[0].city_suspectedCount + "<br/>";
+                  corVirus += "确认案例: " + results[0].city_confirmedCount + "<br/>";
+                  corVirus += "治愈案例: " + results[0].city_curedCount + "<br/>";
+                  corVirus += "死亡案例: " + results[0].city_deadCount + "<br/>";
+                  corVirus += "========<br/>";
+                  corVirus += "城市名: " + results[1].cityNameDis + "<br/>";
+                  corVirus += "疑似案例" + results[1].city_suspectedCount + "<br/>";
+                  corVirus += "确认案例: " + results[1].city_confirmedCount + "<br/>";
+                  corVirus += "治愈案例: " + results[1].city_curedCount + "<br/>";
+                  corVirus += "死亡案例: " + results[1].city_deadCount + "<br/>";
+                  corVirus += "========<br/>";
+                  corVirus += "城市名: " + results[2].cityNameDis + "<br/>";
+                  corVirus += "疑似案例" + results[2].city_suspectedCount + "<br/>";
+                  corVirus += "确认案例: " + results[2].city_confirmedCount + "<br/>";
+                  corVirus += "治愈案例: " + results[2].city_curedCount + "<br/>";
+                  corVirus += "死亡案例: " + results[2].city_deadCount + "<br/>";
+                  json.push(results[0]);
+                  json.push(results[1]);
+              }
               connection.end()
               resolve('ok')
       });
@@ -114,12 +119,12 @@ function getIssue() {
 
 }
 
-// async function hey(){
-//   await getIssue();
-//   main(corVirus).catch(console.error);
-// }
+async function hey(){
+  await getIssue();
+  main(corVirus).catch(console.error);
+}
 
-// hey();
+hey();
 
 setInterval(async ()=>{
   corVirus = '';
