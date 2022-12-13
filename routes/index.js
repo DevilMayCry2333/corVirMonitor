@@ -4,14 +4,15 @@ var request = require('request');
 const nodemailer = require("nodemailer");
 var https = require('https');
 let fs = require('fs')
+const mysql = require("mysql");
 var app = express();
 
-const options = {
-  key: fs.readFileSync('/etc/letsencrypt/live/youkaiyu.com/privkey.pem'),
-  cert: fs.readFileSync('/etc/letsencrypt/live/youkaiyu.com/fullchain.pem')
-};
+// const options = {
+//   key: fs.readFileSync('/etc/letsencrypt/live/youkaiyu.com/privkey.pem'),
+//   cert: fs.readFileSync('/etc/letsencrypt/live/youkaiyu.com/fullchain.pem')
+// };
 
-https.createServer(options, app).listen(8443, '0.0.0.0');
+https.createServer(app).listen(8888, '0.0.0.0');
 
 app.all('*', function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
@@ -40,7 +41,7 @@ async function main(corVirus) {
     secure: true, // true for 465, false for other ports
     auth: {
       user: '1712363499@qq.com', // generated ethereal user
-      pass: '' // generated ethereal password
+
     }
   });
 
@@ -52,6 +53,7 @@ async function main(corVirus) {
     text: corVirus, // plain text body
     html: "<b>" + corVirus + "</b>" // html body
   });
+  console.log("send:" + corVirus);
 
   console.log("Message sent: %s", info.messageId);
   // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
@@ -72,47 +74,38 @@ var getIssueOptions = {
 
 function getIssue() {
   return new Promise(function(resolve,reject){
-      var requestC = request.defaults({jar: true});
-      console.log("url: " + url );
+      var mysql      = require('mysql2');
+      const date = require('silly-datetime')
 
-      requestC(getIssueOptions,function(error,response,body){
-        if(error){
-          console.log("error occurred: " + error);
-          reject(error);
-        }
-        //遍历results,遍历cities。
-        var i,j;
-        var ans = {};
-        var city = [];
-        for(i = 0 ; i < body.results.length; i++){
-          if(body.results[i].provinceName=="福建省"){
-            city = body.results[i].cities;
-            break;
-          }
-        }
-        for(j = 0 ; j < city.length; j++){
-          if(city[j].cityName=="福州"){
-            ans = city[j];
-            break;
-          }
-        }
-        json = ans;
+      connection.connect();
+      let yestDay = date.format(new Date(new Date().getTime() - 1000*3600*24),'YYYYMMDD')
+      var sql = "SELECT distinct(cityName) cityNameDis, city_confirmedCount, city_suspectedCount, city_curedCount, city_deadCount from DXYArea_Test where (cityName like '%福州%' or cityName like '%厦门%' )and date_format(updateTime,'%Y%m%d') = "
+          + yestDay
+          + " group by cityNameDis"
+      connection.query(sql,async function (error, results, fields) {
+              if (error) throw error;
+              // console.log('city_confirmedCount: ', results[0].city_confirmedCount);
+              // console.log('city_suspectedCount: ', results[0].city_suspectedCount);
+              // console.log('city_curedCount: ', results[0].city_curedCount);
+              // console.log('city_deadCount: ', results[0].city_deadCount);
+              corVirus += "城市名: " + results[0].cityNameDis + "<br/>";
+              corVirus += "疑似案例" + results[0].city_suspectedCount + "<br/>";
+              corVirus += "确认案例: " + results[0].city_confirmedCount + "<br/>";
+              corVirus += "治愈案例: " + results[0].city_curedCount + "<br/>";
+              corVirus += "死亡案例: " + results[0].city_deadCount + "<br/>";
+              corVirus += "========<br/>";
+              corVirus += "城市名: " + results[1].cityNameDis + "<br/>";
+              corVirus += "疑似案例" + results[1].city_suspectedCount + "<br/>";
+              corVirus += "确认案例: " + results[1].city_confirmedCount + "<br/>";
+              corVirus += "治愈案例: " + results[1].city_curedCount + "<br/>";
+              corVirus += "死亡案例: " + results[1].city_deadCount + "<br/>";
 
-        corVirus += "城市名: " + ans.cityName + "<br/>";
-        corVirus += "待治愈案例: " + ans.currentConfirmedCount + "<br/>";
-        corVirus += "疑似案例" + ans.suspectedCount + "<br/>";
-        corVirus += "确认案例: " + ans.confirmedCount + "<br/>";
-        corVirus += "治愈案例: " + ans.curedCount + "<br/>";
-        corVirus += "死亡案例: " + ans.deadCount + "<br/>";
+              json = results[0];
+              connection.end()
+              resolve('ok')
+      });
+  });
 
-        console.log("城市名: " + ans.cityName);
-        console.log("待治愈案例: " + ans.currentConfirmedCount);
-        console.log("确认案例: " + ans.confirmedCount);
-        console.log("治愈案例: " + ans.curedCount);
-        console.log("死亡案例: " + ans.deadCount);
-        resolve('ok')
-      }); 
-     });
 }
 
 async function hey(){
