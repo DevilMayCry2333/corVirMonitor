@@ -111,6 +111,7 @@ function getIssue() {
                   corVirus += "死亡案例: " + results[2].city_deadCount + "<br/>";
                   json.push(results[0]);
                   json.push(results[1]);
+                  json.push(results[2]);
               }
               connection.end()
               resolve('ok')

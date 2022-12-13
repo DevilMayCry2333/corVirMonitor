@@ -12,7 +12,7 @@
 比如数据定制化啥的...etc.
 
 已实现功能: 1. 每天定时同步增量数据到数据库去。<br/>
-待修复功能: 1. 推送设定城市的数据到qq邮箱 <br/>
+          2. 推送设定城市的数据到qq邮箱 <br/>
 待实现功能: 1. 在grafana显示时间序列。(好像没啥关系...) <br/>
 
 前端地址 https://github.com/DevilMayCry2333/corVirMonitor-ui

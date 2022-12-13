@@ -56,9 +56,9 @@ def func():
 
 
 if __name__ == '__main__':
-    func()
-    # schedule.clear()
-    # schedule.every(1).days.do(func)
-    # while True:
-    #     schedule.run_pending()
-    #     time.sleep(1)
+    # func()
+    schedule.clear()
+    schedule.every(1).days.do(func)
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
