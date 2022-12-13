@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var request = require('request');
 const nodemailer = require("nodemailer");
-var https = require('https');
+var http = require('http');
 let fs = require('fs')
 const mysql = require("mysql");
 var app = express();
@@ -12,7 +12,7 @@ var app = express();
 //   cert: fs.readFileSync('/etc/letsencrypt/live/youkaiyu.com/fullchain.pem')
 // };
 
-https.createServer(app).listen(8888, '0.0.0.0');
+http.createServer(app).listen(8888, '0.0.0.0');
 
 app.all('*', function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
@@ -24,7 +24,7 @@ app.all('*', function (req, res, next) {
 });
 
 var corVirus = '';
-var json = {};
+var json = [];
 
 var url = "https://raw.githubusercontent.com/BlankerL/DXY-COVID-19-Data/master/json/DXYArea.json";
 // async..await is not allowed in global scope, must use a wrapper
@@ -41,7 +41,7 @@ async function main(corVirus) {
     secure: true, // true for 465, false for other ports
     auth: {
       user: '1712363499@qq.com', // generated ethereal user
-
+      pass: '' // generated ethereal password
     }
   });
 
@@ -76,7 +76,12 @@ function getIssue() {
   return new Promise(function(resolve,reject){
       var mysql      = require('mysql2');
       const date = require('silly-datetime')
-
+      var connection = mysql.createConnection({
+        host     : '',
+        user     : 'debian-sys-maint',
+        password : '',
+        database : 'pythonTest'
+      });
       connection.connect();
       let yestDay = date.format(new Date(new Date().getTime() - 1000*3600*24),'YYYYMMDD')
       var sql = "SELECT distinct(cityName) cityNameDis, city_confirmedCount, city_suspectedCount, city_curedCount, city_deadCount from DXYArea_Test where (cityName like '%福州%' or cityName like '%厦门%' )and date_format(updateTime,'%Y%m%d') = "
@@ -100,7 +105,8 @@ function getIssue() {
               corVirus += "治愈案例: " + results[1].city_curedCount + "<br/>";
               corVirus += "死亡案例: " + results[1].city_deadCount + "<br/>";
 
-              json = results[0];
+              json.push(results[0]);
+              json.push(results[1]);
               connection.end()
               resolve('ok')
       });
@@ -108,12 +114,12 @@ function getIssue() {
 
 }
 
-async function hey(){
-  await getIssue();
-  main(corVirus).catch(console.error);
-}
+// async function hey(){
+//   await getIssue();
+//   main(corVirus).catch(console.error);
+// }
 
-hey();
+// hey();
 
 setInterval(async ()=>{
   corVirus = '';
@@ -126,6 +132,7 @@ setInterval(async ()=>{
 
 /* GET home page. */
 app.get('/', async function(req, res, next) {
+  json = []
   await getIssue();
   res.send(json);
   // res.render('index', { title: 'Express' });
