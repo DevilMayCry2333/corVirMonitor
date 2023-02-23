@@ -17,7 +17,7 @@
     "nodemailer": "^6.6.1",
     "pug": "2.0.4",
     "request": "^2.88.2",
-    "sequelize": "^5.22.5",
+    "sequelize": "^6.28.2",
     "silly-datetime": "^0.1.2"
   }
 }
